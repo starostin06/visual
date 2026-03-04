@@ -1,0 +1,25 @@
+{
+  "name": "visual",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lab1.js",
+  "scripts": {
+    "test": "vitest",
+    "test:ci": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/starostin06/visual.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/starostin06/visual/issues"
+  },
+  "homepage": "https://github.com/starostin06/visual#readme",
+  "devDependencies": {
+    "vitest": "^4.0.18"
+  }
+}
