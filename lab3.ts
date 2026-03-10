@@ -58,3 +58,25 @@ export function csvToJSON(lines: string[], delimiter: string): Record<string, st
 
     return result;
 }
+
+export async function formatCSVFileToJSONFile(
+    input: string, 
+    output: string, 
+    delimiter: string
+): Promise<void> {
+    try {
+        const fileContent = await readFile(input, 'utf-8');
+        
+        const lines = fileContent.split('\n').filter((line: string) => line.trim().length > 0);
+        
+        if (lines.length === 0) {
+            throw new Error('Входной файл пуст');
+        }
+
+        const jsonData = csvToJSON(lines, delimiter);
+        
+        await writeFile(output, JSON.stringify(jsonData, null, 2), 'utf-8');
+    } catch (error) {
+        throw error;
+    }
+}
