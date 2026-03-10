@@ -1,5 +1,11 @@
-import { describe, it, expect } from 'vitest';
-import { csvToJSON } from './lab3';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { csvToJSON, formatCSVFileToJSONFile } from './lab3';
+import { readFile, writeFile } from 'fs/promises';
+
+vi.mock('fs/promises', () => ({
+    readFile: vi.fn(),
+    writeFile: vi.fn()
+}));
 
 describe('csvToJSON', () => {
     describe('Тесты на корректных входных данных', () => {
@@ -144,5 +150,124 @@ describe('csvToJSON', () => {
                 'Строка 3 содержит 2 полей, но заголовок содержит 3 полей'
             );
         });
+    });
+});
+
+describe('formatCSVFileToJSONFile', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('должен читать файл, преобразовывать и записывать результат', async () => {
+        const mockCSVContent = 'id;name;age\n1;Дмитрий;25\n2;Даниил;30';
+        vi.mocked(readFile).mockResolvedValue(mockCSVContent);
+
+        await formatCSVFileToJSONFile('input.csv', 'output.json', ';');
+
+        expect(readFile).toHaveBeenCalledTimes(1);
+        expect(readFile).toHaveBeenCalledWith('input.csv', 'utf-8');
+
+        expect(writeFile).toHaveBeenCalledTimes(1);
+        expect(writeFile).toHaveBeenCalledWith(
+            'output.json',
+            JSON.stringify([
+                { id: 1, name: 'Дмитрий', age: 25 },
+                { id: 2, name: 'Даниил', age: 30 }
+            ], null, 2),
+            'utf-8'
+        );
+    });
+
+    it('должен обрабатывать файл с запятой как разделителем', async () => {
+        const mockCSVContent = 'name,age,city\nДмитрий,25,Иркутск\nДаниил,30,Братск';
+        vi.mocked(readFile).mockResolvedValue(mockCSVContent);
+
+        await formatCSVFileToJSONFile('input.csv', 'output.json', ',');
+
+        expect(writeFile).toHaveBeenCalledWith(
+            'output.json',
+            JSON.stringify([
+                { name: 'Дмитрий', age: 25, city: 'Иркутск' },
+                { name: 'Даниил', age: 30, city: 'Братск' }
+            ], null, 2),
+            'utf-8'
+        );
+    });
+
+    it('должен пробрасывать ошибку от csvToJSON', async () => {
+        const mockCSVContent = 'id;name\n1;Дмитрий\n2';
+        vi.mocked(readFile).mockResolvedValue(mockCSVContent);
+
+        await expect(
+            formatCSVFileToJSONFile('input.csv', 'output.json', ';')
+        ).rejects.toThrow('Строка 3 содержит 1 полей, но заголовок содержит 2 полей');
+
+        expect(writeFile).not.toHaveBeenCalled();
+    });
+
+    it('должен пробрасывать ошибку от readFile', async () => {
+        const error = new Error('Файл не найден');
+        vi.mocked(readFile).mockRejectedValue(error);
+
+        await expect(
+            formatCSVFileToJSONFile('nonexistent.csv', 'output.json', ';')
+        ).rejects.toThrow('Файл не найден');
+
+        expect(writeFile).not.toHaveBeenCalled();
+    });
+
+    it('должен обрабатывать пустой файл', async () => {
+        vi.mocked(readFile).mockResolvedValue('');
+
+        await expect(
+            formatCSVFileToJSONFile('empty.csv', 'output.json', ';')
+        ).rejects.toThrow('Входной файл пуст');
+
+        expect(writeFile).not.toHaveBeenCalled();
+    });
+
+    it('должен обрабатывать файл только с заголовками', async () => {
+        const mockCSVContent = 'id;name;age';
+        vi.mocked(readFile).mockResolvedValue(mockCSVContent);
+
+        await formatCSVFileToJSONFile('input.csv', 'output.json', ';');
+
+        expect(writeFile).toHaveBeenCalledWith(
+            'output.json',
+            JSON.stringify([], null, 2),
+            'utf-8'
+        );
+    });
+
+    it('должен обрабатывать файл с лишними пустыми строками', async () => {
+        const mockCSVContent = 'id;name;age\n\n1;Дмитрий;25\n\n2;Даниил;30\n';
+        vi.mocked(readFile).mockResolvedValue(mockCSVContent);
+
+        await formatCSVFileToJSONFile('input.csv', 'output.json', ';');
+
+        expect(writeFile).toHaveBeenCalledWith(
+            'output.json',
+            JSON.stringify([
+                { id: 1, name: 'Дмитрий', age: 25 },
+                { id: 2, name: 'Даниил', age: 30 }
+            ], null, 2),
+            'utf-8'
+        );
+    });
+
+    it('должен обрабатывать файл с пробелами вокруг значений', async () => {
+        const mockCSVContent = 'id ; name ; age\n 1 ; Дмитрий ; 25 \n 2 ; Даниил ; 30 ';
+        vi.mocked(readFile).mockResolvedValue(mockCSVContent);
+
+        await formatCSVFileToJSONFile('input.csv', 'output.json', ';');
+
+        expect(writeFile).toHaveBeenCalledWith(
+            'output.json',
+            JSON.stringify([
+                { id: 1, name: 'Дмитрий', age: 25 },
+                { id: 2, name: 'Даниил', age: 30 }
+            ], null, 2),
+            'utf-8'
+        );
     });
 });
