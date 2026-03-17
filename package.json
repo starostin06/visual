@@ -1,0 +1,21 @@
+{
+  "name": "visual",
+  "version": "1.0.0",
+  "description": "visualwork",
+  "main": "lab4.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest",
+    "test:ci": "vitest run",
+    "start": "ts-node lab4.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "vitest": "^4.0.18"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
