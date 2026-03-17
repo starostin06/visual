@@ -50,3 +50,23 @@ export const sort = <T>(): Sort<T> => {
     };
   };
 };
+
+export const groupBy = <T>(): GroupBy<T> => {
+  return <K extends keyof T>(key: K): Transform<Group<T, K>> => {
+    return (groups: Group<T, K>[]): Group<T, K>[] => {
+      return groups;
+    };
+  };
+};
+
+export function groupArrayByKey<T, K extends keyof T>(arr: T[], key: K): Group<T, K>[] {
+  const groups: Record<string, Group<T, K>> = {};
+  for (const item of arr) {
+    const keyValue = String(item[key]);
+    if (!groups[keyValue]) {
+      groups[keyValue] = { key: item[key], items: [] };
+    }
+    groups[keyValue].items.push(item);
+  }
+  return Object.values(groups);
+}
