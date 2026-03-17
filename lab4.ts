@@ -16,3 +16,15 @@ export type GroupTransform<T, K extends keyof T> = (groups: Group<T, K>[]) => Gr
 export type Having<T> = <K extends keyof T>(
   predicate: (group: Group<T, K>) => boolean
 ) => GroupTransform<T, K>;
+
+export function query<T>(
+  ...steps: Array<Transform<T> | GroupTransform<T, any>>
+): Transform<T> {
+  return (data: T[]): T[] => {
+    let result: any = data;
+    for (const step of steps) {
+      result = step(result);
+    }
+    return result;
+  };
+}
