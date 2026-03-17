@@ -28,3 +28,11 @@ export function query<T>(
     return result;
   };
 }
+
+export const where = <T>(): Where<T> => {
+  return <K extends keyof T>(key: K, value: T[K]): Transform<T> => {
+    return (data: T[]): T[] => {
+      return data.filter((item) => item[key] === value);
+    };
+  };
+};
