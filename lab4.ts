@@ -36,3 +36,17 @@ export const where = <T>(): Where<T> => {
     };
   };
 };
+
+export const sort = <T>(): Sort<T> => {
+  return <K extends keyof T>(key: K): Transform<T> => {
+    return (data: T[]): T[] => {
+      return [...data].sort((a, b) => {
+        const av = a[key];
+        const bv = b[key];
+        if (av < bv) return -1;
+        if (av > bv) return 1;
+        return 0;
+      });
+    };
+  };
+};
