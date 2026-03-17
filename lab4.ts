@@ -80,3 +80,42 @@ export const having = <T>(): Having<T> => {
     };
   };
 };
+
+type User = {
+  id: number;
+  name: string;
+  age: number;
+  active: string;
+  city: string;
+};
+
+const users: User[] = [
+  { id: 1, name: 'Дмитрий', age: 25, active: 'true', city: 'Иркутск' },
+  { id: 2, name: 'Даниил', age: 30, active: 'false', city: 'Братск' },
+  { id: 3, name: 'Александр', age: 22, active: 'true', city: 'Иркутск' }
+];
+
+const whereFn = where<User>();
+const sortFn = sort<User>();
+const havingFn = having<User>();
+
+console.log('=== Фильтрация по городу Иркутск ===');
+const filtered = query<User>(whereFn("city", "Иркутск"));
+console.log(filtered(users));
+
+console.log('\n=== Сортировка по возрасту ===');
+const sorted = query<User>(sortFn("age"));
+console.log(sorted(users));
+
+console.log('\n=== Группы с более чем 1 пользователем ===');
+const groups = groupArrayByKey(users, "city");
+const havingFilter = havingFn<'city'>((group) => group.items.length > 1);
+const filteredGroups = havingFilter(groups);
+console.log(JSON.stringify(filteredGroups, null, 2));
+
+console.log('\n=== Активные пользователи из Иркутска ===');
+const activeIrkutsk = query<User>(
+  whereFn("city", "Иркутск"),
+  whereFn("active", "true")
+);
+console.log(activeIrkutsk(users));
