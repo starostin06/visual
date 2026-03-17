@@ -70,3 +70,13 @@ export function groupArrayByKey<T, K extends keyof T>(arr: T[], key: K): Group<T
   }
   return Object.values(groups);
 }
+
+export const having = <T>(): Having<T> => {
+  return <K extends keyof T>(
+    predicate: (group: Group<T, K>) => boolean
+  ): GroupTransform<T, K> => {
+    return (groups: Group<T, K>[]): Group<T, K>[] => {
+      return groups.filter(predicate);
+    };
+  };
+};
