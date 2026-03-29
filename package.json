@@ -1,0 +1,16 @@
+{
+  "name": "visual",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "scripts": {
+    "test": "vitest",
+    "test:ci": "vitest run",
+    "build": "tsc",
+    "start": "node dist/lab6.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.2"
+  }
+}
