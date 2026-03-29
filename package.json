@@ -1,0 +1,19 @@
+{
+  "name": "visual",
+  "version": "1.0.0",
+  "description": "visualwork",
+  "main": "lab5.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest",
+    "test:ci": "vitest run",
+    "start": "ts-node lab5.ts",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.37",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.2"
+  }
+}
