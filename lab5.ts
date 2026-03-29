@@ -107,3 +107,44 @@ export function query<T>() {
   
   return builder;
 }
+
+type User = {
+  id: number;
+  name: string;
+  age: number;
+  active: string;
+  city: string;
+};
+
+const users: User[] = [
+  { id: 1, name: 'Дмитрий', age: 25, active: 'true', city: 'Иркутск' },
+  { id: 2, name: 'Даниил', age: 30, active: 'false', city: 'Братск' },
+  { id: 3, name: 'Александр', age: 22, active: 'true', city: 'Иркутск' }
+];
+
+const onlyWhere = query<User>()
+  .where("city", "Иркутск")
+  .build();
+console.log('=== Только where ===');
+console.log(onlyWhere(users));
+
+const onlySort = query<User>()
+  .sort("age")
+  .build();
+console.log('\n=== Только sort ===');
+console.log(onlySort(users));
+
+const groupThenHavingThenSort = query<User>()
+  .groupBy("city")
+  .having((group: Group<User, 'city'>) => group.items.length > 1)
+  .sort("age")
+  .build();
+console.log('\n=== groupBy + having + sort ===');
+console.log(groupThenHavingThenSort(users));
+
+const whereThenSort = query<User>()
+  .where("active", "true")
+  .sort("age")
+  .build();
+console.log('\n=== where + sort ===');
+console.log(whereThenSort(users));
